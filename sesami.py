@@ -9,33 +9,33 @@ from Crypto.Hash import CMAC
 from Crypto.Cipher import AES
 
 
-class SESAMI_CMD(Enum):
+class SESAME_CMD(Enum):
     LOCK = 82
     UNLOCK = 83
     TOGGLE = 88
 
 
-class Sesami:
-    """Control Sesami4.
+class Sesame:
+    """Control Sesame4.
 
-    This class can unlock, lock and toggle doorkey with Sesami4.
+    This class can unlock, lock and toggle doorkey with Sesame4.
 
-    Sesami4 is door lock IoT device. It's product of CANDY HOUSE, Inc.
+    Sesame4 is door lock IoT device. It's product of CANDY HOUSE, Inc.
     productpage-japanese(https://jp.candyhouse.co/products/sesame4).
 
-    This class control Sesami4 as WebAPI.
+    This class control Sesame4 as WebAPI.
     document-japanese(https://doc.candyhouse.co/ja/SesameAPI).
     """
 
     def __init__(self, *, uuid: str = None, api_key: str = None, secret_key: str = None, file_path=None) -> None:
-        """Sesami class constructor.
+        """Sesame class constructor.
 
-        Setup valiables required to connect Sesami4.
+        Setup valiables required to connect Sesame4.
         There are two kind of setup.
         1. Directly setup specific keys(uuid, api_key, secret_key).
-            Sesami(uuid = MY_UUID, api_key = MY_API_KEY, secreat_key = MY_SECRET_KEY)
+            Sesame(uuid = MY_UUID, api_key = MY_API_KEY, secreat_key = MY_SECRET_KEY)
         2. Set config file path. That is json format.
-            Sesami(file_path = "my_sesami_keys.json")
+            Sesame(file_path = "my_sesame_keys.json")
         """
         self._http = urllib3.PoolManager()
         if(file_path is not None):
@@ -72,7 +72,7 @@ class Sesami:
 
         headers = {'x-api-key': self._api_key}
 
-        history = 'pysesami'
+        history = 'pysesame'
         byte_history = bytes(history, 'utf-8')
         base64_history = base64.b64encode(byte_history).decode()
 
@@ -97,10 +97,10 @@ class Sesami:
         print(r.status)
 
     def lock(self):
-        self.post_cmd(SESAMI_CMD.LOCK.value)
+        self.post_cmd(SESAME_CMD.LOCK.value)
 
     def unlock(self):
-        self.post_cmd(SESAMI_CMD.UNLOCK.value)
+        self.post_cmd(SESAME_CMD.UNLOCK.value)
 
     def toggle(self):
-        self.post_cmd(SESAMI_CMD.TOGGLE.value)
+        self.post_cmd(SESAME_CMD.TOGGLE.value)

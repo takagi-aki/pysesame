@@ -1,1 +1,1 @@
-from pysesami.sesami import *
+from pysesame.sesame import *

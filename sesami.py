@@ -16,21 +16,21 @@ class SESAMI_CMD(Enum):
 
 
 class Sesami:
-    """Operate Sesami4 class.
+    """Control Sesami4.
 
     This class can unlock, lock and toggle doorkey with Sesami4.
 
-    Sesami is door lock IOT device.
+    Sesami4 is door lock IoT device. It's product of CANDY HOUSE, Inc.
     productpage-japanese(https://jp.candyhouse.co/products/sesame4).
 
-    This class operate Sesami4 as WebAPI.
+    This class control Sesami4 as WebAPI.
     document-japanese(https://doc.candyhouse.co/ja/SesameAPI).
     """
 
     def __init__(self, *, uuid: str = None, api_key: str = None, secret_key: str = None, file_path=None) -> None:
         """Sesami class constructor.
 
-        Setup valiables required to connect Sesami.
+        Setup valiables required to connect Sesami4.
         There are two kind of setup.
         1. Directly setup specific keys(uuid, api_key, secret_key).
             Sesami(uuid = MY_UUID, api_key = MY_API_KEY, secreat_key = MY_SECRET_KEY)
@@ -73,14 +73,14 @@ class Sesami:
         headers = {'x-api-key': self._api_key}
 
         history = 'pysesami'
-        base64_history = base64.b64encode(bytes(history, 'utf-8')).decode()
+        byte_history = bytes(history, 'utf-8')
+        base64_history = base64.b64encode(byte_history).decode()
 
-        ts = int(datetime.datetime.now().timestamp())
-        message = ts.to_bytes(4, byteorder='little')
-        message = message.hex()[2:8]
+        timestamp = int(datetime.datetime.now().timestamp())
+        mes = timestamp.to_bytes(4, byteorder='little')
+        mes = mes.hex()[2:8]
         cmac = CMAC.new(bytes.fromhex(self._secret_key), ciphermod=AES)
-
-        cmac.update(bytes.fromhex(message))
+        cmac.update(bytes.fromhex(mes))
         sign = cmac.hexdigest()
 
         body = {

@@ -1,1 +1,1 @@
-from pysesame.sesame import *
+from pysesame.sesame import SESAME_CMD, Sesame

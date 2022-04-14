@@ -11,7 +11,7 @@ from Crypto.Cipher import AES
 
 class SESAMI_CMD(Enum):
     LOCK = 82
-    UNLOCK  = 83
+    UNLOCK = 83
     TOGGLE = 88
 
 
@@ -27,7 +27,7 @@ class Sesami:
     document-japanese(https://doc.candyhouse.co/ja/SesameAPI).
     """
 
-    def __init__(self, *, uuid:str=None, api_key:str=None, secret_key:str=None, file_path=None) -> None:
+    def __init__(self, *, uuid: str = None, api_key: str = None, secret_key: str = None, file_path=None) -> None:
         """Sesami class constructor.
 
         Setup valiables required to connect Sesami.
@@ -39,7 +39,7 @@ class Sesami:
         """
         self._http = urllib3.PoolManager()
         if(file_path is not None):
-            with open(file_path, mode = 'r') as f:
+            with open(file_path, mode='r') as f:
                 data = json.loads(f.read())
                 self._uuid = data["UUID"]
                 self._api_key = data["API_KEY"]
@@ -59,15 +59,13 @@ class Sesami:
         print(r.status)
         print(r.data)
 
-
-    def get_log(self, page:int=1, lg:int=50):
+    def get_log(self, page: int = 1, lg: int = 50):
         r = self._http.request(
-        'GET',
-        url=f'https://app.candyhouse.co/api/sesame2/{self._uuid}/history?page={page}&lg={lg}',
-        headers={'x-api-key': self._api_key})
+            'GET',
+            url=f'https://app.candyhouse.co/api/sesame2/{self._uuid}/history?page={page}&lg={lg}',
+            headers={'x-api-key': self._api_key})
         print(r.status)
         print('\n'.join(map(str, (json.loads(r.data)))))
-
 
     def post_cmd(self, cmd):
         url = f'https://app.candyhouse.co/api/sesame2/{self._uuid}/cmd'
@@ -76,8 +74,6 @@ class Sesami:
 
         history = 'pysesami'
         base64_history = base64.b64encode(bytes(history, 'utf-8')).decode()
-
-        cmac = CMAC.new(bytes.fromhex(self._secret_key), ciphermod=AES)
 
         ts = int(datetime.datetime.now().timestamp())
         message = ts.to_bytes(4, byteorder='little')
@@ -100,14 +96,11 @@ class Sesami:
 
         print(r.status)
 
+    def lock(self):
+        self.post_cmd(SESAMI_CMD.LOCK.value)
+
+    def unlock(self):
+        self.post_cmd(SESAMI_CMD.UNLOCK.value)
 
     def toggle(self):
-        self.post_cmd(SESAMI_CMD.TOGGLE)
-
-
-    def open(self):
-        self.post_cmd(SESAMI_CMD.OPEN)
-
-
-    def close(self):
-        self.post_cmd(SESAMI_CMD.CLOSE)
+        self.post_cmd(SESAMI_CMD.TOGGLE.value)

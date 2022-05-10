@@ -1,1 +1,1 @@
-from pysesame.sesame import SESAME_CMD, Sesame
+from pysesame.sesame import SESAME_CMD, Sesame, set_debug_mode

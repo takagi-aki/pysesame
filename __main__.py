@@ -1,8 +1,14 @@
-from pysesame import Sesame
-
 import os
 import shutil
 import argparse
+
+
+import pysesame
+from pysesame import Sesame
+
+
+pysesame.set_debug_mode(True)
+
 
 parser = argparse.ArgumentParser(description='Operate sesame by console.')
 parser.add_argument('command',
@@ -47,4 +53,4 @@ elif args.command == 'get_log':
         dicarg['lg'] = args.lg
     my_sesame.get_log(**dicarg)
 elif(args.command == 'get_status'):
-    my_sesame.get_status()
+    ret = my_sesame.get_status()

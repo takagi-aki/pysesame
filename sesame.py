@@ -2,12 +2,18 @@ from enum import Enum
 import datetime
 import base64
 import json
+from typing import Tuple
 
 
 import urllib3
 from Crypto.Hash import CMAC
 from Crypto.Cipher import AES
 
+
+_pysesame_debug = False
+def set_debug_mode(flag):
+    global _pysesame_debug
+    _pysesame_debug = flag
 
 class SESAME_CMD(Enum):
     LOCK = 82
@@ -51,23 +57,41 @@ class Sesame:
         else:
             raise ValueError
 
-    def get_status(self):
-        r = self._http.request(
+    def get_status(self) -> Tuple[bool, bytes]:
+        """
+        Returns:
+            First is True if succeded to get status. False if failed.
+            Second is data bytes.
+        """
+        r:urllib3.HTTPResponse  = self._http.request(
             'GET',
             url=f'https://app.candyhouse.co/api/sesame2/{self._uuid}',
             headers={'x-api-key': self._api_key})
-        print(r.status)
-        print(r.data)
 
-    def get_log(self, page: int = 1, lg: int = 50):
-        r = self._http.request(
+        if _pysesame_debug:
+            print(r.status)
+            print(r.data)
+
+        return r.status == 200, r.data
+
+    def get_log(self, page: int = 1, lg: int = 50) -> Tuple[bool, bytes]:
+        """
+        Returns:
+            First is True if succeded to get status. False if failed.
+            Second is data bytes.
+        """
+        r:urllib3.HTTPResponse = self._http.request(
             'GET',
             url=f'https://app.candyhouse.co/api/sesame2/{self._uuid}/history?page={page}&lg={lg}',
             headers={'x-api-key': self._api_key})
-        print(r.status)
-        print('\n'.join(map(str, (json.loads(r.data)))))
 
-    def post_cmd(self, cmd):
+        if _pysesame_debug:
+            print(r.status)
+            print('\n'.join(map(str, (json.loads(r.data)))))
+
+        return r.status == 200, r.data
+
+    def post_cmd(self, cmd) -> bool:
         url = f'https://app.candyhouse.co/api/sesame2/{self._uuid}/cmd'
 
         headers = {'x-api-key': self._api_key}
@@ -88,19 +112,34 @@ class Sesame:
             'history': base64_history,
             'sign': sign
         }
-        r = self._http.request(
+        r:urllib3.HTTPResponse  = self._http.request(
             'POST',
             url=url,
             headers=headers,
             body=json.dumps(body))
 
-        print(r.status)
+        if _pysesame_debug:
+            print(r.status)
+    
+        return r.status == 200
 
-    def lock(self):
-        self.post_cmd(SESAME_CMD.LOCK.value)
+    def lock(self) -> bool:
+        """
+        Returns:
+            True if succeded to get status. False if failed.
+        """
+        return self.post_cmd(SESAME_CMD.LOCK.value)
 
-    def unlock(self):
-        self.post_cmd(SESAME_CMD.UNLOCK.value)
+    def unlock(self) -> bool:
+        """
+        Returns:
+            True if succeded to get status. False if failed.
+        """
+        return self.post_cmd(SESAME_CMD.UNLOCK.value)
 
-    def toggle(self):
-        self.post_cmd(SESAME_CMD.TOGGLE.value)
+    def toggle(self) -> bool:
+        """
+        Returns:
+            True if succeded to get status. False if failed.
+        """
+        return self.post_cmd(SESAME_CMD.TOGGLE.value)
